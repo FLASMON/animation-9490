@@ -17,3 +17,7 @@ Navigation sur vraies routes React. Recherche, catégories et tri fonctionnels. 
 
 ## Responsive & accessibilité
 Header compact et menu mobile, hero empilé, grilles 2 colonnes puis 1 selon section. Focus visible, textes alternatifs, labels sur champs/icônes. Réduire animation si préférence système. Aucun débordement horizontal.
+
+## Finition professionnelle — évolution
+Conserver l’identité, les pages et le périmètre de démonstration. Orchestration Motion : entrée séquencée du hero, révélations discrètes au scroll, transitions de pages, produits en cascade, modales fluides. Durées 450–850 ms, courbe douce, déplacements 12–28 px, pas de rebonds ni effets spectaculaires. Animation une seule fois par élément et par route ; aucune attente imposée aux interactions.
+Header sticky compact avec ombre légère au défilement, indicateur discret de progression et retour en haut. Ruban continu sans rupture, suspendu au survol et désactivé en mouvement réduit. Boutons/flèches/cartes affinés ; typographie de lecture améliorée, focus clavier et touch targets renforcés. Filtres avec transitions sans perte de focus. Respect strict de prefers-reduced-motion, aucune animation de layout qui provoque des sauts.

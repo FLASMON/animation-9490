@@ -9,3 +9,6 @@ Terminé : actifs photo locaux, toutes les pages et sections, recherche/tri/filt
 Vérifié : build réussi, lint sans erreur ; tests Playwright Chrome desktop/mobile passés pour images, recherche au clavier, catégories, tri, favoris, panier persistant, code promo, commande, journal, contact, newsletter, FAQ, menu mobile. Aucun débordement mobile ni erreur JavaScript.
 Service : tmux botanica-web, bun run dev, port géré 4200.
 À faire : livraison de l’aperçu web. Limites assumées : catalogue fictif, aucune transaction/expédition ni envoi e-mail, données locales.
+
+Évolution demandée : animations et finition professionnelle, sans changer l’identité ni activer un commerce réel.
+Plan : module Motion partagé, hero séquencé, révélations scroll, navigation sticky/progression, survols raffinés, rubans continus, drawers/modal animés ; améliorer lisibilité/accessibilité, tester tous les parcours et mouvement réduit, livrer le site mis à jour.

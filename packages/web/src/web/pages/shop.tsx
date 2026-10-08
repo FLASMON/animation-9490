@@ -1,5 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useSearch } from "wouter";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { ProductGrid, ProductActionsProvider } from "../components/product-cards";
+import { ScrollEnhancements, useBoutiqueMotion } from "../components/boutique-motion";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -66,12 +69,14 @@ function Botanical({ className = "" }: { className?: string }) {
 function Ribbon() {
   return (
     <div className="ribbon" aria-hidden="true">
+      <div className="ribbon-track">
       {Array.from({ length: 6 }, (_, i) => (
         <span key={i}>
           La beauté au naturel <span className="ribbon-star">✳</span> Prenez soin de vous{" "}
           <span className="ribbon-star">✳</span>
         </span>
       ))}
+      </div>
     </div>
   );
 }
@@ -79,6 +84,8 @@ function Ribbon() {
 export default function Shop() {
   const [location, navigate] = useLocation();
   const search = useSearch();
+  const reducedMotion = useReducedMotion();
+  useBoutiqueMotion(location);
   const [cart, setCart] = useSaved<Cart>("botanica-cart", {});
   const [favorites, setFavorites] = useSaved<string[]>("botanica-favorites", []);
   const [cartOpen, setCartOpen] = useState(false);
@@ -159,52 +166,6 @@ export default function Shop() {
       if (!next[id]) delete next[id];
       return next;
     });
-  }
-  function ProductCard({ p }: { p: Product }) {
-    return (
-      <article className="product-card">
-        <div className="product-image">
-          <Link href={`/produit/${p.id}`}>
-            <img src={photo(p.image)} alt={p.name} loading="lazy" />
-          </Link>
-          <span className="product-badge">{p.badge}</span>
-          <button
-            className={`heart-button ${favorites.includes(p.id) ? "selected" : ""}`}
-            aria-label={`${favorites.includes(p.id) ? "Retirer des" : "Ajouter aux"} favoris : ${p.name}`}
-            onClick={() => favorite(p.id)}
-          >
-            <Heart size={17} fill={favorites.includes(p.id) ? "currentColor" : "none"} />
-          </button>
-          <button className="quick-add" onClick={() => add(p)}>
-            <Plus size={16} /> Ajouter au panier
-          </button>
-        </div>
-        <div className="product-meta">
-          <span>
-            {p.category} · {p.size}
-          </span>
-          <span className="rating">★★★★★</span>
-        </div>
-        <Link href={`/produit/${p.id}`} className="product-name">
-          {p.name}
-        </Link>
-        <div className="product-price">
-          {money(p.price)} {p.old && <del>{money(p.old)}</del>}
-          <button onClick={() => add(p)} aria-label={`Ajouter ${p.name} au panier`}>
-            <Plus size={17} />
-          </button>
-        </div>
-      </article>
-    );
-  }
-  function ProductGrid({ list }: { list: Product[] }) {
-    return (
-      <div className="product-grid">
-        {list.map((p) => (
-          <ProductCard key={p.id} p={p} />
-        ))}
-      </div>
-    );
   }
   function Newsletter({ compact = false }: { compact?: boolean }) {
     const setDone = setNewsletterDone;
@@ -1673,26 +1634,28 @@ export default function Shop() {
     page = <Legal type={location.slice(1)} />;
   else page = <NotFound />;
   return (
-    <>
+    <ProductActionsProvider favorites={favorites} add={add} favorite={favorite}>
       <a href="#main-content" className="skip-link">
         Aller au contenu
       </a>
+      <ScrollEnhancements />
       {Header()}
       <main id="main-content">{page}</main>
       {Footer()}
+      <AnimatePresence>
       {toast && (
-        <output className="toast" aria-live="polite">
+        <motion.output key="toast" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: reducedMotion ? 0 : .25 }} className="toast" aria-live="polite">
           <Check size={18} />
           {toast}
           <button aria-label="Fermer la notification" onClick={() => setToast("")}>
             <X size={15} />
           </button>
-        </output>
+        </motion.output>
       )}
       {cartOpen && (
-        <div className="modal-overlay">
+        <motion.div key="cart" className="modal-overlay" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:reducedMotion?0:.25}}>
           <button className="modal-backdrop" aria-label="Fermer le panier" onClick={() => setCartOpen(false)} />
-          <dialog open
+          <motion.dialog open initial={{x:reducedMotion?0:"100%"}} animate={{x:0}} exit={{x:reducedMotion?0:"100%"}} transition={{duration:reducedMotion?0:.45,ease:[.22,1,.36,1]}}
             className="cart-drawer"
             aria-modal="true"
             aria-label="Votre panier"
@@ -1733,13 +1696,13 @@ export default function Shop() {
             ) : (
               <EmptyCart />
             )}
-          </dialog>
-        </div>
+          </motion.dialog>
+        </motion.div>
       )}
       {searchOpen && (
-        <div className="modal-overlay search-overlay">
+        <motion.div key="search" className="modal-overlay search-overlay" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:reducedMotion?0:.2}}>
           <button className="modal-backdrop" aria-label="Fermer la recherche" onClick={() => setSearchOpen(false)} />
-          <dialog open
+          <motion.dialog open initial={{y:reducedMotion?0:18,scale:reducedMotion?1:.98}} animate={{y:0,scale:1}} exit={{y:reducedMotion?0:12,opacity:0}} transition={{duration:reducedMotion?0:.35,ease:[.22,1,.36,1]}}
             className="search-dialog"
             aria-modal="true"
             aria-label="Rechercher un soin"
@@ -1793,13 +1756,13 @@ export default function Shop() {
                 <p>Aucun résultat. Essayez « sérum » ou « crème ».</p>
               )}
             </div>
-          </dialog>
-        </div>
+          </motion.dialog>
+        </motion.div>
       )}
       {menuOpen && (
-        <div className="modal-overlay">
+        <motion.div key="menu" className="modal-overlay" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:reducedMotion?0:.2}}>
           <button className="modal-backdrop" aria-label="Fermer le menu" onClick={() => setMenuOpen(false)} />
-          <dialog open
+          <motion.dialog open initial={{x:reducedMotion?0:"100%"}} animate={{x:0}} exit={{x:reducedMotion?0:"100%"}} transition={{duration:reducedMotion?0:.35,ease:[.22,1,.36,1]}}
             className="mobile-drawer"
             aria-modal="true"
             aria-label="Navigation"
@@ -1829,9 +1792,10 @@ export default function Shop() {
                 <ArrowUpRight size={18} />
               </Link>
             ))}
-          </dialog>
-        </div>
+          </motion.dialog>
+        </motion.div>
       )}
-    </>
+      </AnimatePresence>
+    </ProductActionsProvider>
   );
 }
